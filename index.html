@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Dash | Premium Coordinate Hub</title>
+    <title>GPS Dash | Quantum Coordinate Hub</title>
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Iconography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-base: #0d0e12;
-            --card-glass: rgba(27, 30, 34, 0.45);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --input-dark: #07080a;
-            --primary: #00bcd4; 
-            --primary-glow: rgba(0, 188, 212, 0.15);
+            --bg-base: #060709;
+            --card-glass: rgba(20, 22, 27, 0.55);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --input-dark: #030406;
+            
+            /* Dynamic Accent Color Properties controlled via JS Engine */
+            --dynamic-accent: #00bcd4; 
+            --dynamic-glow: rgba(0, 188, 212, 0.15);
+            
+            --primary: #00bcd4;
             --secondary: #2979ff; 
             --success: #00e676;
             --error: #ff5252;
+            --warning: #ffb300; /* Amber for poor signal locks */
             --text-main: #f8f9fa;
-            --text-muted: #8a929a;
-            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --text-muted: #79828b;
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         *, *::before, *::after { 
@@ -43,51 +48,54 @@
             position: relative;
         }
 
-        /* Ambient Glowing Background Orbs */
+        /* Ambient Glowing Background Orbs bound to the dynamic engine shifts */
         .ambient-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.12;
+            filter: blur(140px);
+            opacity: 0.15;
             z-index: 0;
             pointer-events: none;
+            transition: var(--transition);
         }
-        .orb-1 { top: 15%; left: 15%; width: 350px; height: 350px; background: var(--primary); }
-        .orb-2 { bottom: 15%; right: 15%; width: 400px; height: 400px; background: var(--secondary); }
+        .orb-1 { top: 10%; left: 15%; width: 380px; height: 380px; background: var(--dynamic-accent); }
+        .orb-2 { bottom: 10%; right: 15%; width: 420px; height: 420px; background: var(--secondary); }
 
         /* Glassmorphic Container */
         .app-container { 
             background: var(--card-glass); 
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             padding: 3rem 2.25rem; 
-            border-radius: 24px; 
+            border-radius: 28px; 
             border: 1px solid var(--card-border);
-            box-shadow: 0 24px 50px rgba(0,0,0,0.4); 
-            max-width: 480px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+            max-width: 490px;
             width: 100%;
             text-align: center;
             z-index: 1;
             transition: var(--transition);
+            position: relative;
         }
 
         .app-container:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 30px var(--primary-glow);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 40px var(--dynamic-glow);
         }
 
         header i { 
-            font-size: 2.8rem; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            font-size: 3rem; 
+            background: linear-gradient(135deg, var(--dynamic-accent), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1.25rem; 
+            transition: var(--transition);
         }
         
-        h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+        h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
         .subtitle { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 2.25rem; }
 
-        /* Universal Action Button Base */
+        /* Action Buttons styling mapping colors safely */
         .btn { 
             display: inline-flex;
             align-items: center;
@@ -95,90 +103,136 @@
             gap: 10px;
             color: #ffffff; 
             border: none; 
-            padding: 15px 24px; 
-            border-radius: 14px; 
+            padding: 16px 24px; 
+            border-radius: 16px; 
             cursor: pointer; 
             font-size: 0.95rem; 
             font-weight: 600;
             transition: var(--transition);
             width: 100%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .btn:active { transform: scale(0.98); }
+        .btn:active { transform: scale(0.97); }
 
         #getLocBtn { 
-            background: linear-gradient(135deg, var(--primary), #00acc1); 
+            background: linear-gradient(135deg, var(--dynamic-accent), #00acc1); 
         }
         #getLocBtn:hover { 
-            background: linear-gradient(135deg, #00e5ff, var(--primary)); 
-            box-shadow: 0 6px 20px rgba(0, 188, 212, 0.3);
+            box-shadow: 0 6px 25px var(--dynamic-glow);
+            filter: brightness(1.1);
         }
 
-        /* Dynamic Status Display Box */
+        /* Interactive Display Component Box */
         #outputDisplay { 
             margin: 24px 0 16px; 
-            padding: 22px; 
+            padding: 24px; 
             background: var(--input-dark); 
-            border-radius: 16px; 
-            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.01);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Success Animation Blast Frame */
-        @keyframes successPulse {
-            0% { border-color: var(--success); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.5); }
-            50% { box-shadow: 0 0 25px 12px rgba(0, 230, 118, 0); }
-            100% { border-color: rgba(0, 188, 212, 0.2); }
+        /* Active Radar Sweep Visual Layers */
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: var(--dynamic-accent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #outputDisplay.loading .radar-sweep {
+            animation: radarPulse 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+        }
+        @keyframes radarPulse {
+            0% { width: 0px; height: 0px; opacity: 0.4; }
+            100% { width: 500px; height: 500px; opacity: 0; border: 1px solid var(--dynamic-accent); }
         }
 
+        /* Success Engine Animations Trigger */
+        @keyframes blastSuccess {
+            0% { border-color: var(--success); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4); }
+            40% { box-shadow: 0 0 30px 15px rgba(0, 230, 118, 0.1); }
+            100% { border-color: rgba(255, 255, 255, 0.05); }
+        }
         #outputDisplay.has-data { 
-            animation: successPulse 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: blastSuccess 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
         #outputDisplay.error { border-color: rgba(255, 82, 82, 0.3); }
 
         #coordWrapper {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             font-family: 'Monaco', 'Consolas', monospace; 
-            font-size: 1.3rem; 
-            letter-spacing: 1px;
+            font-size: 1.25rem; 
+            letter-spacing: 0.5px;
             word-break: break-all;
             color: var(--text-muted);
         }
         #outputDisplay.has-data #coordWrapper { color: var(--text-main); font-weight: 600; }
         #outputDisplay.error #coordWrapper { color: var(--error); font-size: 0.95rem; font-family: inherit; letter-spacing: 0; }
-        #outputDisplay.loading #coordWrapper { color: var(--primary); }
+        #outputDisplay.loading #coordWrapper { color: var(--dynamic-accent); }
 
         .spinner-icon { display: none; animation: spin 1s linear infinite; }
         #outputDisplay.loading .spinner-icon { display: inline-block; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Inline Google Maps Framework Container */
+        /* Reverse Geocoded Clean Human-Address Interface Component */
+        #addressWrapper {
+            margin-top: 10px;
+            font-size: 0.88rem;
+            color: var(--success);
+            font-weight: 500;
+            display: none;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: all 0.8s ease;
+            z-index: 1;
+            position: relative;
+        }
+        #addressWrapper.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Inline Maps Visualization Framework Layout */
         #mapWrapper {
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            border-radius: 14px;
-            margin-top: 16px;
+            border-radius: 16px;
+            margin-top: 18px;
             border: 1px solid rgba(255,255,255,0.05);
-            transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-            background: #141619;
+            transition: max-height 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            background: #111317;
+            position: relative;
+            z-index: 1;
         }
         #mapWrapper.visible {
-            max-height: 220px;
+            max-height: 230px;
             opacity: 1;
             margin-bottom: 8px;
         }
         #mapIframe {
             width: 100%;
-            height: 220px;
+            height: 230px;
             border: none;
             display: block;
         }
 
-        /* Metadata Grid Panel */
+        /* Metadata Metrics Grid */
         #metaGrid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -187,18 +241,21 @@
             padding-top: 16px;
             border-top: 1px solid rgba(255,255,255,0.05);
             display: none;
+            position: relative;
+            z-index: 1;
         }
         .meta-item {
-            background: rgba(255,255,255,0.02);
-            padding: 8px 12px;
-            border-radius: 8px;
+            background: rgba(255,255,255,0.01);
+            padding: 10px 12px;
+            border-radius: 10px;
             font-size: 0.8rem;
             color: var(--text-muted);
             text-align: left;
+            border: 1px solid rgba(255,255,255,0.01);
         }
         .meta-item strong { color: var(--text-main); display: block; font-size: 0.85rem; margin-top: 2px;}
 
-        /* Expanded Actions Wrapper */
+        /* Action Group Menu Framework */
         .action-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -215,15 +272,15 @@
             margin-bottom: 8px;
         }
 
-        .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.05); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.04); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
         
         .btn-accent { background: var(--secondary); }
-        .btn-accent:hover { background: #448aff; box-shadow: 0 6px 16px rgba(41, 121, 255, 0.25); }
+        .btn-accent:hover { background: #448aff; box-shadow: 0 6px 16px rgba(41, 121, 255, 0.2); }
 
         .btn.copied { background: var(--success) !important; color: #000000; }
 
-        /* Privacy Footer Badge */
+        /* Privacy Shield Flagging */
         footer {
             margin-top: 2rem;
             font-size: 0.75rem;
@@ -231,13 +288,13 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            opacity: 0.7;
+            opacity: 0.6;
         }
 
         @media (max-width: 480px) {
-            .app-container { padding: 2.25rem 1.5rem; }
-            h1 { font-size: 1.6rem; }
-            #coordWrapper { font-size: 1.1rem; }
+            .app-container { padding: 2.25rem 1.25rem; }
+            h1 { font-size: 1.7rem; }
+            #coordWrapper { font-size: 1.05rem; }
             .action-group { grid-template-columns: 1fr; max-height: 200px; }
         }
     </style>
@@ -249,7 +306,7 @@
 
     <div class="app-container">
         <header>
-            <i class="fas fa-compass"></i>
+            <i class="fas fa-satellite-dish"></i>
             <h1>GPS Coordinate Hub</h1>
             <p class="subtitle">Securely capture device location tracking metrics instantly without external storage risks.</p>
         </header>
@@ -259,9 +316,17 @@
         </button>
 
         <div id="outputDisplay">
+            <!-- Continuous animated waves while processing tracking queries -->
+            <div class="radar-sweep"></div>
+            
             <div id="coordWrapper">
                 <i class="spinner-icon fas fa-circle-notch"></i>
                 <span id="outputFieldText">Ready to Capture</span>
+            </div>
+            
+            <!-- Real-time Address Container -->
+            <div id="addressWrapper">
+                <i class="fas fa-map-pin"></i> <span id="addressFieldText">Resolving reverse geocode...</span>
             </div>
             
             <!-- Live Embedded Google Map Layer -->
@@ -295,6 +360,8 @@
         const shareLinkBtn = document.getElementById('shareLinkBtn');
         const outputDisplay = document.getElementById('outputDisplay');
         const outputFieldText = document.getElementById('outputFieldText');
+        const addressWrapper = document.getElementById('addressWrapper');
+        const addressFieldText = document.getElementById('addressFieldText');
         const mapWrapper = document.getElementById('mapWrapper');
         const mapIframe = document.getElementById('mapIframe');
         const metaGrid = document.getElementById('metaGrid');
@@ -303,41 +370,120 @@
         const actionGroup = document.getElementById('actionGroup');
 
         let currentMetrics = { lat: '', lng: '', mapUrl: '' };
+        let audioContextInstance = null;
+        let sonarLoopInterval = null;
 
-        // Configuration checks for Native Sharing UI Context 
         window.addEventListener('DOMContentLoaded', () => {
             if (!navigator.share) {
                 shareLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Map Link';
             }
         });
 
+        // Initialize Audio Context Safely following User Tap Constraints
+        function initializeAudioEngine() {
+            if (!audioContextInstance) {
+                audioContextInstance = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Native synthesized Sonar ping sound loop
+        function triggerSonarPingSound() {
+            if (!audioContextInstance) return;
+            
+            const oscNode = audioContextInstance.createOscillator();
+            const gainNode = audioContextInstance.createGain();
+            
+            oscNode.type = 'sine';
+            oscNode.frequency.setValueAtTime(290, audioContextInstance.currentTime); // Low frequency sonar tone
+            oscNode.frequency.exponentialRampToValueAtTime(120, audioContextInstance.currentTime + 0.5);
+            
+            gainNode.gain.setValueAtTime(0.08, audioContextInstance.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContextInstance.currentTime + 0.6);
+            
+            oscNode.connect(gainNode);
+            gainNode.connect(audioContextInstance.destination);
+            
+            oscNode.start();
+            oscNode.stop(audioContextInstance.currentTime + 0.6);
+        }
+
+        // Native Synthesized Arpeggio Success Chime
+        function triggerSuccessChimeSound() {
+            if (!audioContextInstance) return;
+            const frequencies = [523.25, 659.25, 783.99, 1046.50]; // Beautiful C-Major chord progression
+            
+            frequencies.forEach((freq, index) => {
+                const triggerTime = audioContextInstance.currentTime + (index * 0.07);
+                const osc = audioContextInstance.createOscillator();
+                const gain = audioContextInstance.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, triggerTime);
+                
+                gain.gain.setValueAtTime(0.06, triggerTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, triggerTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(audioContextInstance.destination);
+                
+                osc.start(triggerTime);
+                osc.stop(triggerTime + 0.3);
+            });
+        }
+
         getLocBtn.addEventListener('click', () => {
+            initializeAudioEngine();
+            
             if (!navigator.geolocation) {
                 updateUIState('error', 'Browser Core Interface missing Geolocation permissions framework.');
                 return;
             }
 
             updateUIState('loading', 'Polling Device GPS Hardware...');
+            
+            // Audio engine feedback trigger loop
+            triggerSonarPingSound();
+            sonarLoopInterval = setInterval(triggerSonarPingSound, 1400);
 
             navigator.geolocation.getCurrentPosition(
-                (position) => {
+                async (position) => {
+                    clearInterval(sonarLoopInterval);
+                    
                     const latNum = position.coords.latitude;
                     const lngNum = position.coords.longitude;
+                    const signalAccuracy = position.coords.accuracy;
                     
-                    currentMetrics.lat = latNum.toFixed(6);
-                    currentMetrics.lng = lngNum.toFixed(6);
+                    // Constrain positioning metrics strictly to exactly 8 decimal digits
+                    currentMetrics.lat = latNum.toFixed(8);
+                    currentMetrics.lng = lngNum.toFixed(8);
                     currentMetrics.mapUrl = `https://www.google.com/maps?q=${currentMetrics.lat},${currentMetrics.lng}`;
 
-                    // Update Map embed src target for sandboxed visualization
+                    // Dynamic Ambient Interface Color Shifts checking structural signal margins
+                    if (signalAccuracy > 30) {
+                        // Condition Poor: Shift application theme vectors to Warning Amber
+                        document.documentElement.style.setProperty('--dynamic-accent', 'var(--warning)');
+                        document.documentElement.style.setProperty('--dynamic-glow', 'rgba(255, 179, 0, 0.15)');
+                    } else {
+                        // Condition Excellent: Revert or lock execution back to Cyber-Cyan
+                        document.documentElement.style.setProperty('--dynamic-accent', 'var(--primary)');
+                        document.documentElement.style.setProperty('--dynamic-glow', 'rgba(0, 188, 212, 0.15)');
+                    }
+
+                    // Map layout configuration initialization
                     mapIframe.src = `https://maps.google.com/maps?q=${latNum},${lngNum}&z=16&output=embed`;
 
                     // Extract metrics
-                    accuracyField.textContent = `± ${Math.round(position.coords.accuracy)}m`;
+                    accuracyField.textContent = `± ${Math.round(signalAccuracy)}m`;
                     altitudeField.textContent = position.coords.altitude ? `${Math.round(position.coords.altitude)}m` : 'Unavailable';
 
+                    triggerSuccessChimeSound();
                     updateUIState('success', `${currentMetrics.lat}, ${currentMetrics.lng}`);
+
+                    // Silent Reverse Geocode Execution Phase via public openStreetMap pipeline
+                    runReverseGeocodePipeline(latNum, lngNum);
                 },
                 (error) => {
+                    clearInterval(sonarLoopInterval);
                     let faultString = 'Hardware Interface Communication Failure.';
                     switch (error.code) {
                         case error.PERMISSION_DENIED: faultString = 'Permission context rejected by user standard policy.'; break;
@@ -346,9 +492,30 @@
                     }
                     updateUIState('error', faultString);
                 },
-                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         });
+
+        // Safe Reverse Geocoding Module Framework
+        async function runReverseGeocodePipeline(latitude, longitude) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                if (!response.ok) throw new Error();
+                const dataset = await response.json();
+                
+                if (dataset && dataset.display_name) {
+                    // Extract digestible spatial components
+                    const locationData = dataset.address;
+                    const humanReadableAddress = locationData.suburb || locationData.neighbourhood || locationData.road || locationData.city || dataset.display_name;
+                    
+                    addressFieldText.textContent = `Near: ${humanReadableAddress}`;
+                    addressWrapper.classList.add('visible');
+                }
+            } catch (err) {
+                // Fail silently keeping raw geographic coordinate integrity unhindered
+                addressWrapper.classList.remove('visible');
+            }
+        }
 
         // Trigger Copy Workflow for Coordinates Data Pipeline
         copyCoordsBtn.addEventListener('click', async () => {
@@ -361,15 +528,14 @@
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'My Shared Location Pin',
+                        title: 'Captured Location Coordinates',
                         text: `Lat/Lng Coordinates: ${currentMetrics.lat}, ${currentMetrics.lng}`,
                         url: currentMetrics.mapUrl
                     });
                 } catch (err) {
-                    /* User aborted sharing sheet session manually */
+                    /* Session aborted cleanly */
                 }
             } else {
-                // Fallback Engine if execution pattern lacks native mobile system sheets
                 await executeClipboardSave(currentMetrics.mapUrl, shareLinkBtn, '<i class="fas fa-link"></i> Copy Map Link');
             }
         });
@@ -379,9 +545,9 @@
             outputDisplay.classList.remove('loading', 'has-data', 'error');
             actionGroup.classList.remove('visible');
             mapWrapper.classList.remove('visible');
+            addressWrapper.classList.remove('visible');
             metaGrid.style.display = 'none';
 
-            // Reset iframe target when restarting search pipeline sequence
             if (status === 'loading') {
                 mapIframe.src = '';
             }
