@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> GPS - Lat Long finder | Premium Coordinate Hub</title>
+    <title>GPS Dash | Premium Coordinate Hub</title>
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Iconography -->
@@ -21,7 +21,7 @@
             --error: #ff5252;
             --text-main: #f8f9fa;
             --text-muted: #8a929a;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         *, *::before, *::after { 
@@ -124,7 +124,16 @@
             transition: var(--transition);
         }
 
-        #outputDisplay.has-data { border-color: rgba(0, 188, 212, 0.2); }
+        /* Success Animation Blast Frame */
+        @keyframes successPulse {
+            0% { border-color: var(--success); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.5); }
+            50% { box-shadow: 0 0 25px 12px rgba(0, 230, 118, 0); }
+            100% { border-color: rgba(0, 188, 212, 0.2); }
+        }
+
+        #outputDisplay.has-data { 
+            animation: successPulse 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
         #outputDisplay.error { border-color: rgba(255, 82, 82, 0.3); }
 
         #coordWrapper {
@@ -145,6 +154,29 @@
         .spinner-icon { display: none; animation: spin 1s linear infinite; }
         #outputDisplay.loading .spinner-icon { display: inline-block; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Inline Google Maps Framework Container */
+        #mapWrapper {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            border-radius: 14px;
+            margin-top: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            background: #141619;
+        }
+        #mapWrapper.visible {
+            max-height: 220px;
+            opacity: 1;
+            margin-bottom: 8px;
+        }
+        #mapIframe {
+            width: 100%;
+            height: 220px;
+            border: none;
+            display: block;
+        }
 
         /* Metadata Grid Panel */
         #metaGrid {
@@ -180,7 +212,7 @@
         .action-group.visible {
             max-height: 100px;
             opacity: 1;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.05); }
@@ -190,35 +222,6 @@
         .btn-accent:hover { background: #448aff; box-shadow: 0 6px 16px rgba(41, 121, 255, 0.25); }
 
         .btn.copied { background: var(--success) !important; color: #000000; }
-
-        /* Localized History Logs UI */
-        #historyContainer {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            text-align: left;
-            display: none;
-        }
-        .history-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.02);
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: var(--transition);
-        }
-        .history-item:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(0, 188, 212, 0.15);
-        }
-        .history-coords { font-family: monospace; font-size: 0.85rem; color: var(--primary); }
-        .history-time { color: var(--text-muted); font-size: 0.75rem; }
 
         /* Privacy Footer Badge */
         footer {
@@ -258,7 +261,12 @@
         <div id="outputDisplay">
             <div id="coordWrapper">
                 <i class="spinner-icon fas fa-circle-notch"></i>
-                <span id="outputFieldText">Awaiting Initialization...</span>
+                <span id="outputFieldText">Ready to Capture</span>
+            </div>
+            
+            <!-- Live Embedded Google Map Layer -->
+            <div id="mapWrapper">
+                <iframe id="mapIframe" allowfullscreen="" loading="lazy"></iframe>
             </div>
             
             <div id="metaGrid">
@@ -272,14 +280,8 @@
                 <i class="fas fa-copy"></i> Copy Lat/Lng
             </button>
             <button id="shareLinkBtn" class="btn btn-accent">
-                <!-- Swapped dynamic layout icon via engine scripts below -->
                 <i class="fas fa-share-alt"></i> Share Target
             </button>
-        </div>
-
-        <div id="historyContainer">
-            <div class="history-title">Recent Captures (Local Sandbox)</div>
-            <div id="historyList"></div>
         </div>
 
         <footer>
@@ -293,18 +295,17 @@
         const shareLinkBtn = document.getElementById('shareLinkBtn');
         const outputDisplay = document.getElementById('outputDisplay');
         const outputFieldText = document.getElementById('outputFieldText');
+        const mapWrapper = document.getElementById('mapWrapper');
+        const mapIframe = document.getElementById('mapIframe');
         const metaGrid = document.getElementById('metaGrid');
         const accuracyField = document.getElementById('accuracyField');
         const altitudeField = document.getElementById('altitudeField');
         const actionGroup = document.getElementById('actionGroup');
-        const historyContainer = document.getElementById('historyContainer');
-        const historyList = document.getElementById('historyList');
 
         let currentMetrics = { lat: '', lng: '', mapUrl: '' };
 
         // Configuration checks for Native Sharing UI Context 
         window.addEventListener('DOMContentLoaded', () => {
-            renderHistoryUI();
             if (!navigator.share) {
                 shareLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Map Link';
             }
@@ -327,12 +328,14 @@
                     currentMetrics.lng = lngNum.toFixed(6);
                     currentMetrics.mapUrl = `https://www.google.com/maps?q=${currentMetrics.lat},${currentMetrics.lng}`;
 
+                    // Update Map embed src target for sandboxed visualization
+                    mapIframe.src = `https://maps.google.com/maps?q=${latNum},${lngNum}&z=16&output=embed`;
+
                     // Extract metrics
                     accuracyField.textContent = `± ${Math.round(position.coords.accuracy)}m`;
                     altitudeField.textContent = position.coords.altitude ? `${Math.round(position.coords.altitude)}m` : 'Unavailable';
 
                     updateUIState('success', `${currentMetrics.lat}, ${currentMetrics.lng}`);
-                    saveMetricsToLocal(currentMetrics.lat, currentMetrics.lng);
                 },
                 (error) => {
                     let faultString = 'Hardware Interface Communication Failure.';
@@ -375,7 +378,13 @@
         function updateUIState(status, messageText) {
             outputDisplay.classList.remove('loading', 'has-data', 'error');
             actionGroup.classList.remove('visible');
+            mapWrapper.classList.remove('visible');
             metaGrid.style.display = 'none';
+
+            // Reset iframe target when restarting search pipeline sequence
+            if (status === 'loading') {
+                mapIframe.src = '';
+            }
 
             outputFieldText.textContent = messageText;
 
@@ -383,6 +392,7 @@
                 outputDisplay.classList.add('loading');
             } else if (status === 'success') {
                 outputDisplay.classList.add('has-data');
+                mapWrapper.classList.add('visible');
                 metaGrid.style.display = 'grid';
                 actionGroup.classList.add('visible');
             } else if (status === 'error') {
@@ -403,57 +413,6 @@
             } catch (err) {
                 updateUIState('error', 'Execution permission sequence blocked copy action.');
             }
-        }
-
-        // Save entry internally inside LocalStorage Data Loop
-        function saveMetricsToLocal(lat, lng) {
-            let traceCollection = JSON.parse(localStorage.getItem('_gps_history_stack')) || [];
-            const timestampStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            // Build element payload
-            const trackingPayload = { lat, lng, time: timestampStr, id: Date.now() };
-            
-            // Filter duplicates & restrict sizing limits to 4 records
-            traceCollection = [trackingPayload, ...traceCollection.filter(item => item.lat !== lat || item.lng !== lng)].slice(0, 4);
-            
-            localStorage.setItem('_gps_history_stack', JSON.stringify(traceCollection));
-            renderHistoryUI();
-        }
-
-        // Render Local Storage history loop elements array safely
-        function renderHistoryUI() {
-            const stack = JSON.parse(localStorage.getItem('_gps_history_stack')) || [];
-            if (stack.length === 0) {
-                historyContainer.style.display = 'none';
-                return;
-            }
-
-            historyContainer.style.display = 'block';
-            historyList.innerHTML = '';
-
-            stack.forEach(entry => {
-                const itemRow = document.createElement('div');
-                itemRow.className = 'history-item';
-                itemRow.innerHTML = `
-                    <span class="history-coords"><i class="fas fa-location-arrow" style="font-size:0.7rem; color:var(--text-muted)"></i> ${entry.lat}, ${entry.lng}</span>
-                    <span class="history-time">${entry.time} <i class="fas fa-paste" style="margin-left:6px; opacity:0.5"></i></span>
-                `;
-                
-                // Allow instant historical re-copy selection directly via item tape event
-                itemRow.addEventListener('click', () => {
-                    navigator.clipboard.writeText(`${entry.lat}, ${entry.lng}`);
-                    const clockText = itemRow.querySelector('.history-time');
-                    const initialTimeText = clockText.innerHTML;
-                    clockText.style.color = 'var(--success)';
-                    clockText.innerHTML = 'Copied! ✓';
-                    setTimeout(() => {
-                        clockText.style.color = 'var(--text-muted)';
-                        clockText.innerHTML = initialTimeText;
-                    }, 1500);
-                });
-
-                historyList.appendChild(itemRow);
-            });
         }
     </script>
 </body>
