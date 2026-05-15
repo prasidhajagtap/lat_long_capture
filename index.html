@@ -3,142 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Coordinate Sharer</title>
+    <title>GPS Coordinate Sharer | Modern UI</title>
+    <!-- Modern Font: Poppins from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Modern Icons: Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            /* Sophisticated Color Palette */
+            --bg-body: #101214;
+            --bg-container: #1b1e22;
+            --bg-input: #0a0c0e;
+            --primary: #00bcd4; /* Main cyan */
+            --primary-hover: #00e5ff;
+            --secondary: #1a73e8; /* Blue for Copy */
+            --secondary-hover: #1b6ef3;
+            --text-main: #f8f9fa;
+            --text-muted: #abb1b6;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --transition: all 0.3s ease;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
         body { 
-            font-family: system-ui, -apple-system, sans-serif; 
+            font-family: 'Poppins', sans-serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            height: 100vh; 
-            background-color: #1a1a1a; 
-            color: #ffffff; 
+            min-height: 100vh; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
             margin: 0; 
+            padding: 20px;
         }
+
         .container { 
-            text-align: center; 
-            background: #2a2a2a; 
-            padding: 2.5rem; 
-            border-radius: 12px; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
-            max-width: 400px;
-            width: 90%;
+            background: var(--bg-container); 
+            padding: 3rem 2.5rem; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
         }
-        h2 { margin-top: 0; }
-        button { 
-            background: #4CAF50; 
+
+        .container:hover {
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 15px rgba(0, 188, 212, 0.1);
+        }
+
+        header i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; }
+        h1 { margin: 0 0 0.5rem; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 90%; margin: 0 auto 2.5rem; }
+
+        .btn { 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             color: white; 
             border: none; 
-            padding: 12px 24px; 
-            border-radius: 6px; 
+            padding: 14px 28px; 
+            border-radius: 12px; 
             cursor: pointer; 
             font-size: 1rem; 
-            font-weight: bold;
-            margin: 10px 0; 
-            transition: background 0.2s;
+            font-weight: 600;
+            margin: 0;
+            transition: var(--transition);
             width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        button:hover { background: #45a049; }
+
+        .btn:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        #getLocBtn { background: var(--primary); }
+        #getLocBtn:hover { background: var(--primary-hover); }
+
         #output { 
-            margin: 20px 0; 
-            padding: 15px; 
-            background: #111; 
-            border-radius: 6px; 
-            font-family: monospace; 
-            font-size: 1.2rem; 
-            min-height: 24px; 
-            letter-spacing: 1px;
+            margin: 25px 0; 
+            padding: 20px; 
+            background: var(--bg-input); 
+            border-radius: 14px; 
+            font-family: 'Monaco', 'Consolas', monospace; 
+            font-size: 1.25rem; 
+            min-height: 70px; 
+            letter-spacing: 1.5px;
             word-break: break-all;
+            border: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            opacity: 0.8;
+            position: relative;
         }
+
+        #output.has-coords { color: var(--text-main); font-weight: bold; opacity: 1; border-color: rgba(255,255,255,0.1); }
+        #output.loading { color: var(--primary); font-weight: normal; }
+        #output.error { color: var(--error); font-weight: normal; font-size: 1rem; border-color: var(--error); letter-spacing: normal; }
+
+        .status-icon {
+            font-size: 1.4rem;
+            margin-right: 12px;
+            display: none;
+        }
+
+        #output.has-coords .status-icon.check { display: inline-block; color: var(--success); }
+        #output.loading .status-icon.spinner { display: inline-block; animation: spin 1s linear infinite; }
+        #output.error .status-icon.error-sym { display: inline-block; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         #copyBtn { 
             display: none; 
-            background: #008CBA; 
+            background: var(--secondary); 
+            margin-top: 10px;
         }
-        #copyBtn:hover { background: #007B9E; }
+        #copyBtn:hover { background: var(--secondary-hover); }
+
+        /* Animation for successful copy */
+        @keyframes pulseSuccess {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+        #copyBtn.copied { animation: pulseSuccess 1s ease-out; background: var(--success); }
+
+        /* Mobile adjustments */
+        @media (max-width: 500px) {
+            .container { padding: 2.5rem 1.8rem; }
+            h1 { font-size: 1.6rem; }
+            .subtitle { font-size: 0.9rem; }
+            #output { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Location Sharer</h2>
-        <p style="color: #aaa; font-size: 0.9rem;">Allow location access to capture your coordinates.</p>
+        <header>
+            <i class="fas fa-map-marked-alt"></i>
+            <h1>Location Sharer</h1>
+            <p class="subtitle">Quickly capture your device's current latitude and longitude and share them instantly.</p>
+        </header>
         
-        <button id="getLocBtn">Get My Location</button>
-        <div id="output">Waiting for input...</div>
-        <button id="copyBtn">Copy Coordinates</button>
+        <button id="getLocBtn" class="btn">
+            <i class="fas fa-location-dot"></i> Get My Location
+        </button>
+
+        <div id="output">
+            <i class="status-icon spinner fas fa-spinner"></i>
+            <i class="status-icon check fas fa-check-circle"></i>
+            <i class="status-icon error-sym fas fa-exclamation-circle"></i>
+            <span id="coordText">Tap above...</span>
+        </div>
+
+        <button id="copyBtn" class="btn">
+            <i class="fas fa-paste"></i> Copy Coordinates
+        </button>
     </div>
 
     <script>
         const getLocBtn = document.getElementById('getLocBtn');
         const copyBtn = document.getElementById('copyBtn');
         const output = document.getElementById('output');
+        const coordText = document.getElementById('coordText');
         let currentCoords = '';
 
         getLocBtn.addEventListener('click', () => {
-            // Check if the browser supports Geolocation
+            // Check support
             if (!navigator.geolocation) {
-                output.textContent = "Geolocation is not supported by your browser.";
+                setLocState('error', "Your browser doesn't support geolocation.");
                 return;
             }
 
-            output.textContent = "Locating...";
-            copyBtn.style.display = 'none';
+            // Start locating state
+            setLocState('loading', "Locating...");
             
-            // Fetch the position
+            // Get position
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude.toFixed(6);
                     const lng = position.coords.longitude.toFixed(6);
                     
-                    // Format and display
+                    // Format and show success
                     currentCoords = `${lat}, ${lng}`;
-                    output.textContent = currentCoords;
-                    
-                    // Reveal the copy button
-                    copyBtn.style.display = 'block';
+                    setLocState('success', currentCoords);
                 },
                 (error) => {
-                    // Handle user denying permission or network drops
+                    // Handle errors
+                    let errMsg = "An unknown error occurred.";
                     switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            output.textContent = "Permission denied.";
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            output.textContent = "Location unavailable.";
-                            break;
-                        case error.TIMEOUT:
-                            output.textContent = "Request timed out.";
-                            break;
-                        default:
-                            output.textContent = "An unknown error occurred.";
-                            break;
+                        case error.PERMISSION_DENIED: errMsg = "Permission to use location was denied."; break;
+                        case error.POSITION_UNAVAILABLE: errMsg = "Location information is unavailable."; break;
+                        case error.TIMEOUT: errMsg = "The request to get location timed out."; break;
                     }
+                    setLocState('error', errMsg);
                 },
-                {
-                    enableHighAccuracy: true, // Forces the device to use GPS hardware if available
-                    timeout: 10000,
-                    maximumAge: 0
-                }
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         });
 
         copyBtn.addEventListener('click', async () => {
+            if (!currentCoords) return;
             try {
-                // Write to device clipboard
+                // Copy to clipboard
                 await navigator.clipboard.writeText(currentCoords);
                 
-                // Visual feedback
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = "Copied to Clipboard! ✓";
-                copyBtn.style.background = "#4CAF50";
+                // Show feedback animation & text
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied to Clipboard! ✓';
                 
                 setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.style.background = "#008CBA";
-                }, 2000);
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<i class="fas fa-paste"></i> Copy Coordinates';
+                }, 2500);
             } catch (err) {
-                output.textContent = "Failed to copy text.";
+                setLocState('error', "Failed to copy coordinates.");
             }
         });
+
+        // Helper function to manage UI states (loading, success, error)
+        function setLocState(state, text) {
+            output.classList.remove('loading', 'has-coords', 'error');
+            copyBtn.style.display = 'none';
+            coordText.textContent = text;
+
+            if (state === 'loading') {
+                output.classList.add('loading');
+            } else if (state === 'success') {
+                output.classList.add('has-coords');
+                copyBtn.style.display = 'inline-flex';
+            } else if (state === 'error') {
+                output.classList.add('error');
+            }
+        }
     </script>
 </body>
 </html>
