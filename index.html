@@ -3,242 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Coordinate Sharer | Modern UI</title>
-    <!-- Modern Font: Poppins from Google Fonts -->
+    <title> GPS - Lat Long finder | Premium Coordinate Hub</title>
+    <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Modern Icons: Font Awesome -->
+    <!-- Iconography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            /* Sophisticated Color Palette */
-            --bg-body: #101214;
-            --bg-container: #1b1e22;
-            --bg-input: #0a0c0e;
-            --primary: #00bcd4; /* Main cyan */
-            --primary-hover: #00e5ff;
-            --secondary: #1a73e8; /* Blue for Copy */
-            --secondary-hover: #1b6ef3;
+            --bg-base: #0d0e12;
+            --card-glass: rgba(27, 30, 34, 0.45);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --input-dark: #07080a;
+            --primary: #00bcd4; 
+            --primary-glow: rgba(0, 188, 212, 0.15);
+            --secondary: #2979ff; 
+            --success: #00e676;
+            --error: #ff5252;
             --text-main: #f8f9fa;
-            --text-muted: #abb1b6;
-            --success: #2ecc71;
-            --error: #e74c3c;
-            --transition: all 0.3s ease;
+            --text-muted: #8a929a;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+        }
 
         body { 
             font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            margin: 0; 
             padding: 20px;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        .container { 
-            background: var(--bg-container); 
-            padding: 3rem 2.5rem; 
-            border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
-            max-width: 450px;
+        /* Ambient Glowing Background Orbs */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .orb-1 { top: 15%; left: 15%; width: 350px; height: 350px; background: var(--primary); }
+        .orb-2 { bottom: 15%; right: 15%; width: 400px; height: 400px; background: var(--secondary); }
+
+        /* Glassmorphic Container */
+        .app-container { 
+            background: var(--card-glass); 
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 3rem 2.25rem; 
+            border-radius: 24px; 
+            border: 1px solid var(--card-border);
+            box-shadow: 0 24px 50px rgba(0,0,0,0.4); 
+            max-width: 480px;
             width: 100%;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            z-index: 1;
             transition: var(--transition);
         }
 
-        .container:hover {
-            box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 15px rgba(0, 188, 212, 0.1);
+        .app-container:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 30px var(--primary-glow);
         }
 
-        header i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; }
-        h1 { margin: 0 0 0.5rem; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 90%; margin: 0 auto 2.5rem; }
+        header i { 
+            font-size: 2.8rem; 
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.25rem; 
+        }
+        
+        h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 2.25rem; }
 
+        /* Universal Action Button Base */
         .btn { 
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            color: white; 
+            color: #ffffff; 
             border: none; 
-            padding: 14px 28px; 
-            border-radius: 12px; 
+            padding: 15px 24px; 
+            border-radius: 14px; 
             cursor: pointer; 
-            font-size: 1rem; 
+            font-size: 0.95rem; 
             font-weight: 600;
-            margin: 0;
             transition: var(--transition);
             width: 100%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn:active { transform: scale(0.98); }
+
+        #getLocBtn { 
+            background: linear-gradient(135deg, var(--primary), #00acc1); 
+        }
+        #getLocBtn:hover { 
+            background: linear-gradient(135deg, #00e5ff, var(--primary)); 
+            box-shadow: 0 6px 20px rgba(0, 188, 212, 0.3);
         }
 
-        .btn:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* Dynamic Status Display Box */
+        #outputDisplay { 
+            margin: 24px 0 16px; 
+            padding: 22px; 
+            background: var(--input-dark); 
+            border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: var(--transition);
+        }
 
-        #getLocBtn { background: var(--primary); }
-        #getLocBtn:hover { background: var(--primary-hover); }
+        #outputDisplay.has-data { border-color: rgba(0, 188, 212, 0.2); }
+        #outputDisplay.error { border-color: rgba(255, 82, 82, 0.3); }
 
-        #output { 
-            margin: 25px 0; 
-            padding: 20px; 
-            background: var(--bg-input); 
-            border-radius: 14px; 
-            font-family: 'Monaco', 'Consolas', monospace; 
-            font-size: 1.25rem; 
-            min-height: 70px; 
-            letter-spacing: 1.5px;
-            word-break: break-all;
-            border: 1px solid rgba(255,255,255,0.03);
+        #coordWrapper {
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 12px;
+            font-family: 'Monaco', 'Consolas', monospace; 
+            font-size: 1.3rem; 
+            letter-spacing: 1px;
+            word-break: break-all;
             color: var(--text-muted);
-            opacity: 0.8;
-            position: relative;
         }
+        #outputDisplay.has-data #coordWrapper { color: var(--text-main); font-weight: 600; }
+        #outputDisplay.error #coordWrapper { color: var(--error); font-size: 0.95rem; font-family: inherit; letter-spacing: 0; }
+        #outputDisplay.loading #coordWrapper { color: var(--primary); }
 
-        #output.has-coords { color: var(--text-main); font-weight: bold; opacity: 1; border-color: rgba(255,255,255,0.1); }
-        #output.loading { color: var(--primary); font-weight: normal; }
-        #output.error { color: var(--error); font-weight: normal; font-size: 1rem; border-color: var(--error); letter-spacing: normal; }
-
-        .status-icon {
-            font-size: 1.4rem;
-            margin-right: 12px;
-            display: none;
-        }
-
-        #output.has-coords .status-icon.check { display: inline-block; color: var(--success); }
-        #output.loading .status-icon.spinner { display: inline-block; animation: spin 1s linear infinite; }
-        #output.error .status-icon.error-sym { display: inline-block; }
-
+        .spinner-icon { display: none; animation: spin 1s linear infinite; }
+        #outputDisplay.loading .spinner-icon { display: inline-block; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        #copyBtn { 
-            display: none; 
-            background: var(--secondary); 
-            margin-top: 10px;
+        /* Metadata Grid Panel */
+        #metaGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: none;
         }
-        #copyBtn:hover { background: var(--secondary-hover); }
-
-        /* Animation for successful copy */
-        @keyframes pulseSuccess {
-            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        .meta-item {
+            background: rgba(255,255,255,0.02);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: left;
         }
-        #copyBtn.copied { animation: pulseSuccess 1s ease-out; background: var(--success); }
+        .meta-item strong { color: var(--text-main); display: block; font-size: 0.85rem; margin-top: 2px;}
 
-        /* Mobile adjustments */
-        @media (max-width: 500px) {
-            .container { padding: 2.5rem 1.8rem; }
+        /* Expanded Actions Wrapper */
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+        }
+        .action-group.visible {
+            max-height: 100px;
+            opacity: 1;
+            margin-bottom: 16px;
+        }
+
+        .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.05); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+        
+        .btn-accent { background: var(--secondary); }
+        .btn-accent:hover { background: #448aff; box-shadow: 0 6px 16px rgba(41, 121, 255, 0.25); }
+
+        .btn.copied { background: var(--success) !important; color: #000000; }
+
+        /* Localized History Logs UI */
+        #historyContainer {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: left;
+            display: none;
+        }
+        .history-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+        .history-item:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(0, 188, 212, 0.15);
+        }
+        .history-coords { font-family: monospace; font-size: 0.85rem; color: var(--primary); }
+        .history-time { color: var(--text-muted); font-size: 0.75rem; }
+
+        /* Privacy Footer Badge */
+        footer {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 480px) {
+            .app-container { padding: 2.25rem 1.5rem; }
             h1 { font-size: 1.6rem; }
-            .subtitle { font-size: 0.9rem; }
-            #output { font-size: 1.1rem; }
+            #coordWrapper { font-size: 1.1rem; }
+            .action-group { grid-template-columns: 1fr; max-height: 200px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <div class="app-container">
         <header>
-            <i class="fas fa-map-marked-alt"></i>
-            <h1>Location Sharer</h1>
-            <p class="subtitle">Quickly capture your device's current latitude and longitude and share them instantly.</p>
+            <i class="fas fa-compass"></i>
+            <h1>GPS Coordinate Hub</h1>
+            <p class="subtitle">Securely capture device location tracking metrics instantly without external storage risks.</p>
         </header>
-        
+
         <button id="getLocBtn" class="btn">
-            <i class="fas fa-location-dot"></i> Get My Location
+            <i class="fas fa-crosshairs"></i> Capture Current Position
         </button>
 
-        <div id="output">
-            <i class="status-icon spinner fas fa-spinner"></i>
-            <i class="status-icon check fas fa-check-circle"></i>
-            <i class="status-icon error-sym fas fa-exclamation-circle"></i>
-            <span id="coordText">Tap above...</span>
+        <div id="outputDisplay">
+            <div id="coordWrapper">
+                <i class="spinner-icon fas fa-circle-notch"></i>
+                <span id="outputFieldText">Awaiting Initialization...</span>
+            </div>
+            
+            <div id="metaGrid">
+                <div class="meta-item"><i class="fas fa-bullseye"></i> Accuracy <strong id="accuracyField">-</strong></div>
+                <div class="meta-item"><i class="fas fa-mountain"></i> Altitude <strong id="altitudeField">-</strong></div>
+            </div>
         </div>
 
-        <button id="copyBtn" class="btn">
-            <i class="fas fa-paste"></i> Copy Coordinates
-        </button>
+        <div id="actionGroup" class="action-group">
+            <button id="copyCoordsBtn" class="btn btn-secondary">
+                <i class="fas fa-copy"></i> Copy Lat/Lng
+            </button>
+            <button id="shareLinkBtn" class="btn btn-accent">
+                <!-- Swapped dynamic layout icon via engine scripts below -->
+                <i class="fas fa-share-alt"></i> Share Target
+            </button>
+        </div>
+
+        <div id="historyContainer">
+            <div class="history-title">Recent Captures (Local Sandbox)</div>
+            <div id="historyList"></div>
+        </div>
+
+        <footer>
+            <i class="fas fa-shield-halved"></i> 100% Secure Client Context Configuration. No Data Leaves Device.
+        </footer>
     </div>
 
     <script>
         const getLocBtn = document.getElementById('getLocBtn');
-        const copyBtn = document.getElementById('copyBtn');
-        const output = document.getElementById('output');
-        const coordText = document.getElementById('coordText');
-        let currentCoords = '';
+        const copyCoordsBtn = document.getElementById('copyCoordsBtn');
+        const shareLinkBtn = document.getElementById('shareLinkBtn');
+        const outputDisplay = document.getElementById('outputDisplay');
+        const outputFieldText = document.getElementById('outputFieldText');
+        const metaGrid = document.getElementById('metaGrid');
+        const accuracyField = document.getElementById('accuracyField');
+        const altitudeField = document.getElementById('altitudeField');
+        const actionGroup = document.getElementById('actionGroup');
+        const historyContainer = document.getElementById('historyContainer');
+        const historyList = document.getElementById('historyList');
+
+        let currentMetrics = { lat: '', lng: '', mapUrl: '' };
+
+        // Configuration checks for Native Sharing UI Context 
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHistoryUI();
+            if (!navigator.share) {
+                shareLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Map Link';
+            }
+        });
 
         getLocBtn.addEventListener('click', () => {
-            // Check support
             if (!navigator.geolocation) {
-                setLocState('error', "Your browser doesn't support geolocation.");
+                updateUIState('error', 'Browser Core Interface missing Geolocation permissions framework.');
                 return;
             }
 
-            // Start locating state
-            setLocState('loading', "Locating...");
-            
-            // Get position
+            updateUIState('loading', 'Polling Device GPS Hardware...');
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const lat = position.coords.latitude.toFixed(6);
-                    const lng = position.coords.longitude.toFixed(6);
+                    const latNum = position.coords.latitude;
+                    const lngNum = position.coords.longitude;
                     
-                    // Format and show success
-                    currentCoords = `${lat}, ${lng}`;
-                    setLocState('success', currentCoords);
+                    currentMetrics.lat = latNum.toFixed(6);
+                    currentMetrics.lng = lngNum.toFixed(6);
+                    currentMetrics.mapUrl = `https://www.google.com/maps?q=${currentMetrics.lat},${currentMetrics.lng}`;
+
+                    // Extract metrics
+                    accuracyField.textContent = `± ${Math.round(position.coords.accuracy)}m`;
+                    altitudeField.textContent = position.coords.altitude ? `${Math.round(position.coords.altitude)}m` : 'Unavailable';
+
+                    updateUIState('success', `${currentMetrics.lat}, ${currentMetrics.lng}`);
+                    saveMetricsToLocal(currentMetrics.lat, currentMetrics.lng);
                 },
                 (error) => {
-                    // Handle errors
-                    let errMsg = "An unknown error occurred.";
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED: errMsg = "Permission to use location was denied."; break;
-                        case error.POSITION_UNAVAILABLE: errMsg = "Location information is unavailable."; break;
-                        case error.TIMEOUT: errMsg = "The request to get location timed out."; break;
+                    let faultString = 'Hardware Interface Communication Failure.';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED: faultString = 'Permission context rejected by user standard policy.'; break;
+                        case error.POSITION_UNAVAILABLE: faultString = 'Network link or GPS position resolution context unavailable.'; break;
+                        case error.TIMEOUT: faultString = 'Hardware tracking pipeline link threshold timed out.'; break;
                     }
-                    setLocState('error', errMsg);
+                    updateUIState('error', faultString);
                 },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
             );
         });
 
-        copyBtn.addEventListener('click', async () => {
-            if (!currentCoords) return;
-            try {
-                // Copy to clipboard
-                await navigator.clipboard.writeText(currentCoords);
-                
-                // Show feedback animation & text
-                copyBtn.classList.add('copied');
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied to Clipboard! ✓';
-                
-                setTimeout(() => {
-                    copyBtn.classList.remove('copied');
-                    copyBtn.innerHTML = '<i class="fas fa-paste"></i> Copy Coordinates';
-                }, 2500);
-            } catch (err) {
-                setLocState('error', "Failed to copy coordinates.");
+        // Trigger Copy Workflow for Coordinates Data Pipeline
+        copyCoordsBtn.addEventListener('click', async () => {
+            const rawTextStr = `${currentMetrics.lat}, ${currentMetrics.lng}`;
+            await executeClipboardSave(rawTextStr, copyCoordsBtn, '<i class="fas fa-copy"></i> Copy Lat/Lng');
+        });
+
+        // Smart Sharing Router Trigger
+        shareLinkBtn.addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'My Shared Location Pin',
+                        text: `Lat/Lng Coordinates: ${currentMetrics.lat}, ${currentMetrics.lng}`,
+                        url: currentMetrics.mapUrl
+                    });
+                } catch (err) {
+                    /* User aborted sharing sheet session manually */
+                }
+            } else {
+                // Fallback Engine if execution pattern lacks native mobile system sheets
+                await executeClipboardSave(currentMetrics.mapUrl, shareLinkBtn, '<i class="fas fa-link"></i> Copy Map Link');
             }
         });
 
-        // Helper function to manage UI states (loading, success, error)
-        function setLocState(state, text) {
-            output.classList.remove('loading', 'has-coords', 'error');
-            copyBtn.style.display = 'none';
-            coordText.textContent = text;
+        // Pipeline Logic Module UI State Engine
+        function updateUIState(status, messageText) {
+            outputDisplay.classList.remove('loading', 'has-data', 'error');
+            actionGroup.classList.remove('visible');
+            metaGrid.style.display = 'none';
 
-            if (state === 'loading') {
-                output.classList.add('loading');
-            } else if (state === 'success') {
-                output.classList.add('has-coords');
-                copyBtn.style.display = 'inline-flex';
-            } else if (state === 'error') {
-                output.classList.add('error');
+            outputFieldText.textContent = messageText;
+
+            if (status === 'loading') {
+                outputDisplay.classList.add('loading');
+            } else if (status === 'success') {
+                outputDisplay.classList.add('has-data');
+                metaGrid.style.display = 'grid';
+                actionGroup.classList.add('visible');
+            } else if (status === 'error') {
+                outputDisplay.classList.add('error');
             }
+        }
+
+        // Clipboard Action Wrapper Implementation
+        async function executeClipboardSave(textToSave, componentInstance, initialMarkupText) {
+            try {
+                await navigator.clipboard.writeText(textToSave);
+                componentInstance.classList.add('copied');
+                componentInstance.innerHTML = '<i class="fas fa-check"></i> Verified!';
+                setTimeout(() => {
+                    componentInstance.classList.remove('copied');
+                    componentInstance.innerHTML = initialMarkupText;
+                }, 2000);
+            } catch (err) {
+                updateUIState('error', 'Execution permission sequence blocked copy action.');
+            }
+        }
+
+        // Save entry internally inside LocalStorage Data Loop
+        function saveMetricsToLocal(lat, lng) {
+            let traceCollection = JSON.parse(localStorage.getItem('_gps_history_stack')) || [];
+            const timestampStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Build element payload
+            const trackingPayload = { lat, lng, time: timestampStr, id: Date.now() };
+            
+            // Filter duplicates & restrict sizing limits to 4 records
+            traceCollection = [trackingPayload, ...traceCollection.filter(item => item.lat !== lat || item.lng !== lng)].slice(0, 4);
+            
+            localStorage.setItem('_gps_history_stack', JSON.stringify(traceCollection));
+            renderHistoryUI();
+        }
+
+        // Render Local Storage history loop elements array safely
+        function renderHistoryUI() {
+            const stack = JSON.parse(localStorage.getItem('_gps_history_stack')) || [];
+            if (stack.length === 0) {
+                historyContainer.style.display = 'none';
+                return;
+            }
+
+            historyContainer.style.display = 'block';
+            historyList.innerHTML = '';
+
+            stack.forEach(entry => {
+                const itemRow = document.createElement('div');
+                itemRow.className = 'history-item';
+                itemRow.innerHTML = `
+                    <span class="history-coords"><i class="fas fa-location-arrow" style="font-size:0.7rem; color:var(--text-muted)"></i> ${entry.lat}, ${entry.lng}</span>
+                    <span class="history-time">${entry.time} <i class="fas fa-paste" style="margin-left:6px; opacity:0.5"></i></span>
+                `;
+                
+                // Allow instant historical re-copy selection directly via item tape event
+                itemRow.addEventListener('click', () => {
+                    navigator.clipboard.writeText(`${entry.lat}, ${entry.lng}`);
+                    const clockText = itemRow.querySelector('.history-time');
+                    const initialTimeText = clockText.innerHTML;
+                    clockText.style.color = 'var(--success)';
+                    clockText.innerHTML = 'Copied! ✓';
+                    setTimeout(() => {
+                        clockText.style.color = 'var(--text-muted)';
+                        clockText.innerHTML = initialTimeText;
+                    }, 1500);
+                });
+
+                historyList.appendChild(itemRow);
+            });
         }
     </script>
 </body>
