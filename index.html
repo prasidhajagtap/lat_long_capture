@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Dash | Quantum Coordinate Hub</title>
-    <!-- Premium Fonts -->
+    <title>GPS Dash | Optimized Coordinate Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Iconography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -14,19 +12,16 @@
             --card-glass: rgba(20, 22, 27, 0.55);
             --card-border: rgba(255, 255, 255, 0.05);
             --input-dark: #030406;
-            
-            /* Dynamic Accent Color Properties controlled via JS Engine */
             --dynamic-accent: #00bcd4; 
             --dynamic-glow: rgba(0, 188, 212, 0.15);
-            
             --primary: #00bcd4;
             --secondary: #2979ff; 
             --success: #00e676;
             --error: #ff5252;
-            --warning: #ffb300; /* Amber for poor signal locks */
+            --warning: #ffb300; 
             --text-main: #f8f9fa;
             --text-muted: #79828b;
-            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         *, *::before, *::after { 
@@ -44,24 +39,23 @@
             align-items: center; 
             min-height: 100vh; 
             padding: 20px;
-            overflow-x: hidden;
+            overflow: hidden;
             position: relative;
         }
 
-        /* Ambient Glowing Background Orbs bound to the dynamic engine shifts */
         .ambient-orb {
             position: absolute;
             border-radius: 50%;
             filter: blur(140px);
-            opacity: 0.15;
+            opacity: 0.12;
             z-index: 0;
             pointer-events: none;
             transition: var(--transition);
+            will-change: background;
         }
         .orb-1 { top: 10%; left: 15%; width: 380px; height: 380px; background: var(--dynamic-accent); }
         .orb-2 { bottom: 10%; right: 15%; width: 420px; height: 420px; background: var(--secondary); }
 
-        /* Glassmorphic Container */
         .app-container { 
             background: var(--card-glass); 
             backdrop-filter: blur(30px);
@@ -75,7 +69,6 @@
             text-align: center;
             z-index: 1;
             transition: var(--transition);
-            position: relative;
         }
 
         .app-container:hover {
@@ -95,7 +88,6 @@
         h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
         .subtitle { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 2.25rem; }
 
-        /* Action Buttons styling mapping colors safely */
         .btn { 
             display: inline-flex;
             align-items: center;
@@ -111,6 +103,7 @@
             transition: var(--transition);
             width: 100%;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            will-change: transform;
         }
         .btn:active { transform: scale(0.97); }
 
@@ -122,7 +115,6 @@
             filter: brightness(1.1);
         }
 
-        /* Interactive Display Component Box */
         #outputDisplay { 
             margin: 24px 0 16px; 
             padding: 24px; 
@@ -134,38 +126,38 @@
             overflow: hidden;
         }
 
-        /* Active Radar Sweep Visual Layers */
+        /* GPU Optimised Radar System using Transform Scale Layering */
         .radar-sweep {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 20px;
-            height: 20px;
-            background: var(--dynamic-accent);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, transparent 30%, var(--dynamic-accent) 100%);
             border-radius: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
             pointer-events: none;
             z-index: 0;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            will-change: transform, opacity;
         }
         #outputDisplay.loading .radar-sweep {
-            animation: radarPulse 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+            animation: radarPulse 1.6s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
         }
         @keyframes radarPulse {
-            0% { width: 0px; height: 0px; opacity: 0.4; }
-            100% { width: 500px; height: 500px; opacity: 0; border: 1px solid var(--dynamic-accent); }
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
         }
 
-        /* Success Engine Animations Trigger */
         @keyframes blastSuccess {
-            0% { border-color: var(--success); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4); }
-            40% { box-shadow: 0 0 30px 15px rgba(0, 230, 118, 0.1); }
-            100% { border-color: rgba(255, 255, 255, 0.05); }
+            0% { border-color: var(--success); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.3); }
+            50% { box-shadow: 0 0 30px 15px rgba(0, 230, 118, 0); }
+            100% { border-color: rgba(255, 255, 255, 0.04); }
         }
         #outputDisplay.has-data { 
-            animation: blastSuccess 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            animation: blastSuccess 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
-        #outputDisplay.error { border-color: rgba(255, 82, 82, 0.3); }
+        #outputDisplay.error { border-color: rgba(255, 82, 82, 0.25); }
 
         #coordWrapper {
             position: relative;
@@ -188,7 +180,6 @@
         #outputDisplay.loading .spinner-icon { display: inline-block; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Reverse Geocoded Clean Human-Address Interface Component */
         #addressWrapper {
             margin-top: 10px;
             font-size: 0.88rem;
@@ -196,8 +187,8 @@
             font-weight: 500;
             display: none;
             opacity: 0;
-            transform: translateY(5px);
-            transition: all 0.8s ease;
+            transform: translateY(4px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
             z-index: 1;
             position: relative;
         }
@@ -207,7 +198,6 @@
             transform: translateY(0);
         }
 
-        /* Inline Maps Visualization Framework Layout */
         #mapWrapper {
             max-height: 0;
             opacity: 0;
@@ -215,7 +205,7 @@
             border-radius: 16px;
             margin-top: 18px;
             border: 1px solid rgba(255,255,255,0.05);
-            transition: max-height 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            transition: max-height 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
             background: #111317;
             position: relative;
             z-index: 1;
@@ -232,7 +222,6 @@
             display: block;
         }
 
-        /* Metadata Metrics Grid */
         #metaGrid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -251,11 +240,9 @@
             font-size: 0.8rem;
             color: var(--text-muted);
             text-align: left;
-            border: 1px solid rgba(255,255,255,0.01);
         }
         .meta-item strong { color: var(--text-main); display: block; font-size: 0.85rem; margin-top: 2px;}
 
-        /* Action Group Menu Framework */
         .action-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -277,10 +264,8 @@
         
         .btn-accent { background: var(--secondary); }
         .btn-accent:hover { background: #448aff; box-shadow: 0 6px 16px rgba(41, 121, 255, 0.2); }
-
         .btn.copied { background: var(--success) !important; color: #000000; }
 
-        /* Privacy Shield Flagging */
         footer {
             margin-top: 2rem;
             font-size: 0.75rem;
@@ -316,7 +301,6 @@
         </button>
 
         <div id="outputDisplay">
-            <!-- Continuous animated waves while processing tracking queries -->
             <div class="radar-sweep"></div>
             
             <div id="coordWrapper">
@@ -324,12 +308,10 @@
                 <span id="outputFieldText">Ready to Capture</span>
             </div>
             
-            <!-- Real-time Address Container -->
             <div id="addressWrapper">
                 <i class="fas fa-map-pin"></i> <span id="addressFieldText">Resolving reverse geocode...</span>
             </div>
             
-            <!-- Live Embedded Google Map Layer -->
             <div id="mapWrapper">
                 <iframe id="mapIframe" allowfullscreen="" loading="lazy"></iframe>
             </div>
@@ -355,84 +337,80 @@
     </div>
 
     <script>
-        const getLocBtn = document.getElementById('getLocBtn');
-        const copyCoordsBtn = document.getElementById('copyCoordsBtn');
-        const shareLinkBtn = document.getElementById('shareLinkBtn');
-        const outputDisplay = document.getElementById('outputDisplay');
-        const outputFieldText = document.getElementById('outputFieldText');
-        const addressWrapper = document.getElementById('addressWrapper');
-        const addressFieldText = document.getElementById('addressFieldText');
-        const mapWrapper = document.getElementById('mapWrapper');
-        const mapIframe = document.getElementById('mapIframe');
-        const metaGrid = document.getElementById('metaGrid');
-        const accuracyField = document.getElementById('accuracyField');
-        const altitudeField = document.getElementById('altitudeField');
-        const actionGroup = document.getElementById('actionGroup');
+        // Cache DOM elements globally to prevent redundant layout lookups
+        const elements = {
+            getLocBtn: document.getElementById('getLocBtn'),
+            copyCoordsBtn: document.getElementById('copyCoordsBtn'),
+            shareLinkBtn: document.getElementById('shareLinkBtn'),
+            outputDisplay: document.getElementById('outputDisplay'),
+            outputFieldText: document.getElementById('outputFieldText'),
+            addressWrapper: document.getElementById('addressWrapper'),
+            addressFieldText: document.getElementById('addressFieldText'),
+            mapWrapper: document.getElementById('mapWrapper'),
+            mapIframe: document.getElementById('mapIframe'),
+            metaGrid: document.getElementById('metaGrid'),
+            accuracyField: document.getElementById('accuracyField'),
+            altitudeField: document.getElementById('altitudeField'),
+            actionGroup: document.getElementById('actionGroup')
+        };
 
         let currentMetrics = { lat: '', lng: '', mapUrl: '' };
-        let audioContextInstance = null;
-        let sonarLoopInterval = null;
+        let audioCtx = null;
+        let sonarInterval = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             if (!navigator.share) {
-                shareLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Map Link';
+                elements.shareLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Map Link';
             }
         });
 
-        // Initialize Audio Context Safely following User Tap Constraints
-        function initializeAudioEngine() {
-            if (!audioContextInstance) {
-                audioContextInstance = new (window.AudioContext || window.webkitAudioContext)();
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
 
-        // Native synthesized Sonar ping sound loop
-        function triggerSonarPingSound() {
-            if (!audioContextInstance) return;
+        function playSonarPing() {
+            if (!audioCtx || audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
             
-            const oscNode = audioContextInstance.createOscillator();
-            const gainNode = audioContextInstance.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(290, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.5);
             
-            oscNode.type = 'sine';
-            oscNode.frequency.setValueAtTime(290, audioContextInstance.currentTime); // Low frequency sonar tone
-            oscNode.frequency.exponentialRampToValueAtTime(120, audioContextInstance.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
             
-            gainNode.gain.setValueAtTime(0.08, audioContextInstance.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContextInstance.currentTime + 0.6);
-            
-            oscNode.connect(gainNode);
-            gainNode.connect(audioContextInstance.destination);
-            
-            oscNode.start();
-            oscNode.stop(audioContextInstance.currentTime + 0.6);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
         }
 
-        // Native Synthesized Arpeggio Success Chime
-        function triggerSuccessChimeSound() {
-            if (!audioContextInstance) return;
-            const frequencies = [523.25, 659.25, 783.99, 1046.50]; // Beautiful C-Major chord progression
+        function playSuccessChime() {
+            if (!audioCtx || audioCtx.state === 'suspended') return;
+            const chords = [523.25, 659.25, 783.99, 1046.50];
             
-            frequencies.forEach((freq, index) => {
-                const triggerTime = audioContextInstance.currentTime + (index * 0.07);
-                const osc = audioContextInstance.createOscillator();
-                const gain = audioContextInstance.createGain();
+            chords.forEach((freq, idx) => {
+                const playTime = audioCtx.currentTime + (idx * 0.07);
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
                 
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, triggerTime);
-                
-                gain.gain.setValueAtTime(0.06, triggerTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, triggerTime + 0.3);
+                osc.frequency.setValueAtTime(freq, playTime);
+                gain.gain.setValueAtTime(0.05, playTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, playTime + 0.3);
                 
                 osc.connect(gain);
-                gain.connect(audioContextInstance.destination);
-                
-                osc.start(triggerTime);
-                osc.stop(triggerTime + 0.3);
+                gain.connect(audioCtx.destination);
+                osc.start(playTime);
+                osc.stop(playTime + 0.3);
             });
         }
 
-        getLocBtn.addEventListener('click', () => {
-            initializeAudioEngine();
+        elements.getLocBtn.addEventListener('click', () => {
+            initAudio();
             
             if (!navigator.geolocation) {
                 updateUIState('error', 'Browser Core Interface missing Geolocation permissions framework.');
@@ -441,49 +419,42 @@
 
             updateUIState('loading', 'Polling Device GPS Hardware...');
             
-            // Audio engine feedback trigger loop
-            triggerSonarPingSound();
-            sonarLoopInterval = setInterval(triggerSonarPingSound, 1400);
+            playSonarPing();
+            clearInterval(sonarInterval);
+            sonarInterval = setInterval(playSonarPing, 1400);
 
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    clearInterval(sonarLoopInterval);
+                    clearInterval(sonarInterval);
                     
                     const latNum = position.coords.latitude;
                     const lngNum = position.coords.longitude;
                     const signalAccuracy = position.coords.accuracy;
                     
-                    // Constrain positioning metrics strictly to exactly 8 decimal digits
                     currentMetrics.lat = latNum.toFixed(8);
                     currentMetrics.lng = lngNum.toFixed(8);
                     currentMetrics.mapUrl = `https://www.google.com/maps?q=${currentMetrics.lat},${currentMetrics.lng}`;
 
-                    // Dynamic Ambient Interface Color Shifts checking structural signal margins
+                    // Dynamic UI Color Adaptation
                     if (signalAccuracy > 30) {
-                        // Condition Poor: Shift application theme vectors to Warning Amber
                         document.documentElement.style.setProperty('--dynamic-accent', 'var(--warning)');
                         document.documentElement.style.setProperty('--dynamic-glow', 'rgba(255, 179, 0, 0.15)');
                     } else {
-                        // Condition Excellent: Revert or lock execution back to Cyber-Cyan
                         document.documentElement.style.setProperty('--dynamic-accent', 'var(--primary)');
                         document.documentElement.style.setProperty('--dynamic-glow', 'rgba(0, 188, 212, 0.15)');
                     }
 
-                    // Map layout configuration initialization
-                    mapIframe.src = `https://maps.google.com/maps?q=${latNum},${lngNum}&z=16&output=embed`;
+                    elements.mapIframe.src = `https://maps.google.com/maps?q=${latNum},${lngNum}&z=16&output=embed`;
+                    elements.accuracyField.textContent = `± ${Math.round(signalAccuracy)}m`;
+                    elements.altitudeField.textContent = position.coords.altitude ? `${Math.round(position.coords.altitude)}m` : 'Unavailable';
 
-                    // Extract metrics
-                    accuracyField.textContent = `± ${Math.round(signalAccuracy)}m`;
-                    altitudeField.textContent = position.coords.altitude ? `${Math.round(position.coords.altitude)}m` : 'Unavailable';
-
-                    triggerSuccessChimeSound();
+                    playSuccessChime();
                     updateUIState('success', `${currentMetrics.lat}, ${currentMetrics.lng}`);
 
-                    // Silent Reverse Geocode Execution Phase via public openStreetMap pipeline
-                    runReverseGeocodePipeline(latNum, lngNum);
+                    runReverseGeocode(latNum, lngNum);
                 },
                 (error) => {
-                    clearInterval(sonarLoopInterval);
+                    clearInterval(sonarInterval);
                     let faultString = 'Hardware Interface Communication Failure.';
                     switch (error.code) {
                         case error.PERMISSION_DENIED: faultString = 'Permission context rejected by user standard policy.'; break;
@@ -496,35 +467,34 @@
             );
         });
 
-        // Safe Reverse Geocoding Module Framework
-        async function runReverseGeocodePipeline(latitude, longitude) {
+        // Compliant Reverse Geocoding Pipeline Loop
+        async function runReverseGeocode(latitude, longitude) {
             try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                // Sent with a compliant User-Agent identification string to bypass OpenStreetMap usage locks
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+                    { headers: { 'User-Agent': 'GPS-Coordinate-Hub-Client-Optimization-v2' } }
+                );
                 if (!response.ok) throw new Error();
                 const dataset = await response.json();
                 
                 if (dataset && dataset.display_name) {
-                    // Extract digestible spatial components
-                    const locationData = dataset.address;
-                    const humanReadableAddress = locationData.suburb || locationData.neighbourhood || locationData.road || locationData.city || dataset.display_name;
+                    const loc = dataset.address;
+                    const humanReadableAddress = loc.suburb || loc.neighbourhood || loc.road || loc.city || dataset.display_name;
                     
-                    addressFieldText.textContent = `Near: ${humanReadableAddress}`;
-                    addressWrapper.classList.add('visible');
+                    elements.addressFieldText.textContent = `Near: ${humanReadableAddress}`;
+                    elements.addressWrapper.classList.add('visible');
                 }
             } catch (err) {
-                // Fail silently keeping raw geographic coordinate integrity unhindered
-                addressWrapper.classList.remove('visible');
+                elements.addressWrapper.classList.remove('visible');
             }
         }
 
-        // Trigger Copy Workflow for Coordinates Data Pipeline
-        copyCoordsBtn.addEventListener('click', async () => {
-            const rawTextStr = `${currentMetrics.lat}, ${currentMetrics.lng}`;
-            await executeClipboardSave(rawTextStr, copyCoordsBtn, '<i class="fas fa-copy"></i> Copy Lat/Lng');
+        elements.copyCoordsBtn.addEventListener('click', async () => {
+            await executeClipboardSave(`${currentMetrics.lat}, ${currentMetrics.lng}`, elements.copyCoordsBtn, '<i class="fas fa-copy"></i> Copy Lat/Lng');
         });
 
-        // Smart Sharing Router Trigger
-        shareLinkBtn.addEventListener('click', async () => {
+        elements.shareLinkBtn.addEventListener('click', async () => {
             if (navigator.share) {
                 try {
                     await navigator.share({
@@ -532,41 +502,34 @@
                         text: `Lat/Lng Coordinates: ${currentMetrics.lat}, ${currentMetrics.lng}`,
                         url: currentMetrics.mapUrl
                     });
-                } catch (err) {
-                    /* Session aborted cleanly */
-                }
+                } catch (err) {}
             } else {
-                await executeClipboardSave(currentMetrics.mapUrl, shareLinkBtn, '<i class="fas fa-link"></i> Copy Map Link');
+                await executeClipboardSave(currentMetrics.mapUrl, elements.shareLinkBtn, '<i class="fas fa-link"></i> Copy Map Link');
             }
         });
 
-        // Pipeline Logic Module UI State Engine
         function updateUIState(status, messageText) {
-            outputDisplay.classList.remove('loading', 'has-data', 'error');
-            actionGroup.classList.remove('visible');
-            mapWrapper.classList.remove('visible');
-            addressWrapper.classList.remove('visible');
-            metaGrid.style.display = 'none';
+            elements.outputDisplay.classList.remove('loading', 'has-data', 'error');
+            elements.actionGroup.classList.remove('visible');
+            elements.mapWrapper.classList.remove('visible');
+            elements.addressWrapper.classList.remove('visible');
+            elements.metaGrid.style.display = 'none';
+
+            if (status === 'loading') elements.mapIframe.src = '';
+            elements.outputFieldText.textContent = messageText;
 
             if (status === 'loading') {
-                mapIframe.src = '';
-            }
-
-            outputFieldText.textContent = messageText;
-
-            if (status === 'loading') {
-                outputDisplay.classList.add('loading');
+                elements.outputDisplay.classList.add('loading');
             } else if (status === 'success') {
-                outputDisplay.classList.add('has-data');
-                mapWrapper.classList.add('visible');
-                metaGrid.style.display = 'grid';
-                actionGroup.classList.add('visible');
+                elements.outputDisplay.classList.add('has-data');
+                elements.mapWrapper.classList.add('visible');
+                elements.metaGrid.style.display = 'grid';
+                elements.actionGroup.classList.add('visible');
             } else if (status === 'error') {
-                outputDisplay.classList.add('error');
+                elements.outputDisplay.classList.add('error');
             }
         }
 
-        // Clipboard Action Wrapper Implementation
         async function executeClipboardSave(textToSave, componentInstance, initialMarkupText) {
             try {
                 await navigator.clipboard.writeText(textToSave);
