@@ -38,8 +38,8 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            padding: 20px;
-            overflow: hidden;
+            padding: 40px 20px; /* Generous vertical padding for mobile devices */
+            overflow-y: auto;   /* FIXED: Enabled smooth vertical layout scrolling */
             position: relative;
         }
 
@@ -126,7 +126,6 @@
             overflow: hidden;
         }
 
-        /* GPU Optimised Radar System using Transform Scale Layering */
         .radar-sweep {
             position: absolute;
             top: 50%;
@@ -243,10 +242,9 @@
         }
         .meta-item strong { color: var(--text-main); display: block; font-size: 0.85rem; margin-top: 2px;}
 
+        /* REFACTORED: Action container holds a single full-width premium layout element */
         .action-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            display: block;
             margin-top: 8px;
             max-height: 0;
             opacity: 0;
@@ -259,11 +257,14 @@
             margin-bottom: 8px;
         }
 
-        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.04); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-        
-        .btn-accent { background: var(--secondary); }
-        .btn-accent:hover { background: #448aff; box-shadow: 0 6px 16px rgba(41, 121, 255, 0.2); }
+        .btn-secondary { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.04); 
+        }
+        .btn-secondary:hover { 
+            background: rgba(255,255,255,0.1); 
+            border-color: rgba(255,255,255,0.15);
+        }
         .btn.copied { background: var(--success) !important; color: #000000; }
 
         footer {
@@ -280,7 +281,6 @@
             .app-container { padding: 2.25rem 1.25rem; }
             h1 { font-size: 1.7rem; }
             #coordWrapper { font-size: 1.05rem; }
-            .action-group { grid-template-columns: 1fr; max-height: 200px; }
         }
     </style>
 </head>
@@ -324,10 +324,7 @@
 
         <div id="actionGroup" class="action-group">
             <button id="copyCoordsBtn" class="btn btn-secondary">
-                <i class="fas fa-copy"></i> Copy Lat/Lng
-            </button>
-            <button id="shareLinkBtn" class="btn btn-accent">
-                <i class="fas fa-share-alt"></i> Share Target
+                <i class="fas fa-copy"></i> Copy Lat/Lng Coordinates
             </button>
         </div>
 
@@ -337,11 +334,9 @@
     </div>
 
     <script>
-        // Cache DOM elements globally to prevent redundant layout lookups
         const elements = {
             getLocBtn: document.getElementById('getLocBtn'),
             copyCoordsBtn: document.getElementById('copyCoordsBtn'),
-            shareLinkBtn: document.getElementById('shareLinkBtn'),
             outputDisplay: document.getElementById('outputDisplay'),
             outputFieldText: document.getElementById('outputFieldText'),
             addressWrapper: document.getElementById('addressWrapper'),
@@ -354,15 +349,9 @@
             actionGroup: document.getElementById('actionGroup')
         };
 
-        let currentMetrics = { lat: '', lng: '', mapUrl: '' };
+        let currentMetrics = { lat: '', lng: '' };
         let audioCtx = null;
         let sonarInterval = null;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!navigator.share) {
-                elements.shareLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Map Link';
-            }
-        });
 
         function initAudio() {
             if (!audioCtx) {
@@ -433,9 +422,7 @@
                     
                     currentMetrics.lat = latNum.toFixed(8);
                     currentMetrics.lng = lngNum.toFixed(8);
-                    currentMetrics.mapUrl = `https://www.google.com/maps?q=${currentMetrics.lat},${currentMetrics.lng}`;
 
-                    // Dynamic UI Color Adaptation
                     if (signalAccuracy > 30) {
                         document.documentElement.style.setProperty('--dynamic-accent', 'var(--warning)');
                         document.documentElement.style.setProperty('--dynamic-glow', 'rgba(255, 179, 0, 0.15)');
@@ -467,10 +454,8 @@
             );
         });
 
-        // Compliant Reverse Geocoding Pipeline Loop
         async function runReverseGeocode(latitude, longitude) {
             try {
-                // Sent with a compliant User-Agent identification string to bypass OpenStreetMap usage locks
                 const response = await fetch(
                     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
                     { headers: { 'User-Agent': 'GPS-Coordinate-Hub-Client-Optimization-v2' } }
@@ -491,21 +476,7 @@
         }
 
         elements.copyCoordsBtn.addEventListener('click', async () => {
-            await executeClipboardSave(`${currentMetrics.lat}, ${currentMetrics.lng}`, elements.copyCoordsBtn, '<i class="fas fa-copy"></i> Copy Lat/Lng');
-        });
-
-        elements.shareLinkBtn.addEventListener('click', async () => {
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Captured Location Coordinates',
-                        text: `Lat/Lng Coordinates: ${currentMetrics.lat}, ${currentMetrics.lng}`,
-                        url: currentMetrics.mapUrl
-                    });
-                } catch (err) {}
-            } else {
-                await executeClipboardSave(currentMetrics.mapUrl, elements.shareLinkBtn, '<i class="fas fa-link"></i> Copy Map Link');
-            }
+            await executeClipboardSave(`${currentMetrics.lat}, ${currentMetrics.lng}`, elements.copyCoordsBtn, '<i class="fas fa-copy"></i> Copy Lat/Lng Coordinates');
         });
 
         function updateUIState(status, messageText) {
