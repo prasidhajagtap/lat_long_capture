@@ -56,7 +56,7 @@
         .orb-1 { top: 10%; left: 15%; width: 380px; height: 380px; background: var(--dynamic-accent); }
         .orb-2 { bottom: 10%; right: 15%; width: 420px; height: 420px; background: var(--secondary); }
 
-        /* Main Dashboard Viewport Container wrapper */
+        /* Main Dashboard Viewport Container */
         .app-container { 
             background: var(--card-glass); 
             backdrop-filter: blur(30px);
@@ -72,6 +72,7 @@
             transition: opacity 0.4s ease;
         }
 
+        /* MDM Hidden Workspace Rule */
         .app-container.secure-hidden {
             opacity: 0 !important;
             pointer-events: none;
@@ -266,14 +267,14 @@
             opacity: 0.6;
         }
 
-        /* MDM PITCH-BLACK SECURE POPUP SHIELD SYSTEM */
+        /* SOLID PITCH-BLACK SECURE BLANKET LAYER */
         #secureOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #000000; /* Strict solid blackout layer prevents screenshot leaks underneath */
+            background-color: #000000; 
             z-index: 9999;
             display: flex;
             justify-content: center;
@@ -304,7 +305,7 @@
             transform: scale(1);
         }
 
-        /* Micro-Animation Circle Tick Confirmation */
+        /* Animated Tick Indicator */
         .success-tick-wrapper {
             width: 72px;
             height: 72px;
@@ -370,7 +371,7 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Active App Interface Layer -->
+    <!-- Active Interface Layer -->
     <div id="mainDashboard" class="app-container">
         <header>
             <i class="fas fa-satellite-dish"></i>
@@ -415,7 +416,7 @@
         </footer>
     </div>
 
-    <!-- Solid Pitch-Black Security Interceptor Shield Overlay Layer -->
+    <!-- Pitch-Black MDM Interceptor Shield Mask -->
     <div id="secureOverlay">
         <div class="secure-modal-card">
             <div class="success-tick-wrapper">
@@ -501,6 +502,10 @@
             });
         }
 
+        /* 
+          CORE CAPTURE HANDLER
+          Preserves original geolocation parsing loops safely.
+        */
         elements.getLocBtn.addEventListener('click', () => {
             initAudio();
             
@@ -578,21 +583,20 @@
             }
         }
 
-        // Action Trigger: Secure Clipboard Copy + Blackout Activation
+        /* 
+          SECURITY TRIGGER LAYER
+          Copies elements, invokes hybrid container layout blocks, and blanks out background.
+        */
         elements.copyCoordsBtn.addEventListener('click', async () => {
             const coordinateString = `${currentMetrics.lat}, ${currentMetrics.lng}`;
             
             try {
-                // Step 1: Write text to system clipboard
                 await navigator.clipboard.writeText(coordinateString);
-                
-                // Step 2: Update pop-up metrics layout context
                 elements.secureDisplayBox.textContent = coordinateString;
                 
-                // Step 3: Call Container Security Bridge Placeholder
+                // DISPATCHING RUNTIME COMMAND TO MOBILE CONTAINER HOOKS
                 toggleNativeSecureLayer(true);
 
-                // Step 4: Hide dashboard and invoke visual pitch-black screen blocker overlay 
                 elements.mainDashboard.classList.add('secure-hidden');
                 elements.secureOverlay.classList.add('active');
                 
@@ -601,29 +605,45 @@
             }
         });
 
-        // Dismiss Action Trigger: Lift Blackout and return safely to Workspace
+        /* 
+          DISMISSAL TRIGGER LAYER
+          Clears native container blocks and exposes active UI workspace gracefully.
+        */
         elements.ackSecureBtn.addEventListener('click', () => {
-            // Step 1: Disable Container Security Flags
             toggleNativeSecureLayer(false);
 
-            // Step 2: Unhide app viewports cleanly
             elements.secureOverlay.classList.remove('active');
             elements.mainDashboard.classList.remove('secure-hidden');
         });
 
-        /*
-          CRITICAL SECURITY BRIDGE INTERFACE CONTAINER STUB
-          --------------------------------------------------
-          If you deploy via Flutter/WebView, map this routine to invoke your native safety flags.
-          Example (Android Native):
-              if(state) { getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE); }
-        */
+        /**
+         * SECURE HYBRID CONTAINER NATIVE INTERFACE ROUTER
+         * Broadcasters security states to Android/iOS webview bridge parameters.
+         * @param {boolean} enableSecureMode
+         */
         function toggleNativeSecureLayer(enableSecureMode) {
-            console.log(`[MDM Security Bridge]: Native system screen capture tracking restriction status set to: ${enableSecureMode}`);
+            console.log(`[MDM Security Bridge] Dispatching lock command state: ${enableSecureMode}`);
             
-            // Example hook syntax pattern for future integration setup:
-            // if (window.AndroidBridge) { window.AndroidBridge.setSecureFlags(enableSecureMode); }
-            // if (window.webkit && window.webkit.messageHandlers) { window.webkit.messageHandlers.secureMode.postMessage(enableSecureMode); }
+            try {
+                // Android Container Validation Interface Lookup
+                if (window.AndroidSecureBridge && typeof window.AndroidSecureBridge.setSecureFlags === 'function') {
+                    window.AndroidSecureBridge.setSecureFlags(enableSecureMode);
+                    return;
+                }
+
+                // iOS WKWebView Script Message Router Lookup
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.secureModeHandler) {
+                    window.webkit.messageHandlers.secureModeHandler.postMessage({
+                        action: "setSecureFlags",
+                        value: enableSecureMode
+                    });
+                    return;
+                }
+
+                console.warn("[MDM Security Bridge] Dev environment platform fallback active. Wrapper execution channels bypassed.");
+            } catch (bridgeError) {
+                console.error("[MDM Security Bridge] Framework communication error:", bridgeError);
+            }
         }
 
         function updateUIState(status, messageText) {
@@ -645,73 +665,6 @@
                 elements.actionGroup.classList.add('visible');
             } else if (status === 'error') {
                 elements.outputDisplay.classList.add('error');
-            }
-        }
-        // Action Trigger: Secure Clipboard Copy + Blackout Activation
-        elements.copyCoordsBtn.addEventListener('click', async () => {
-            const coordinateString = `${currentMetrics.lat}, ${currentMetrics.lng}`;
-            
-            try {
-                // 1. Write data to system clipboard
-                await navigator.clipboard.writeText(coordinateString);
-                
-                // 2. Update pop-up metrics layout context
-                elements.secureDisplayBox.textContent = coordinateString;
-                
-                // 3. FIRING NATIVE BRIDGE: Lock the hardware screen capture pipelines immediately
-                toggleNativeSecureLayer(true);
-
-                // 4. Hide dashboard and invoke visual pitch-black screen blocker overlay
-                elements.mainDashboard.classList.add('secure-hidden');
-                elements.secureOverlay.classList.add('active');
-                
-            } catch (err) {
-                updateUIState('error', 'Execution permission sequence blocked copy action.');
-            }
-        });
-
-        // Dismiss Action Trigger: Lift Blackout and return safely to Workspace
-        elements.ackSecureBtn.addEventListener('click', () => {
-            // 1. FIRING NATIVE BRIDGE: Safely unlock screen captures again
-            toggleNativeSecureLayer(false);
-
-            // 2. Unhide app viewports cleanly
-            elements.secureOverlay.classList.remove('active');
-            elements.mainDashboard.classList.remove('secure-hidden');
-        });
-
-        /**
-         * SECURE CONTAINER APP BRIDGE CONTROLLER
-         * Dispatches security lock commands directly to the wrapping mobile frame.
-         * @param {boolean} enableSecureMode - true to block screenshots, false to unblock.
-         */
-        function toggleNativeSecureLayer(enableSecureMode) {
-            console.log(`[MDM Security Bridge] Requesting native capture block status: ${enableSecureMode}`);
-            
-            try {
-                // ---- METHOD A: ANDROID WEBVIEW INTERFACE ----
-                // Matches standard setup: webView.addJavascriptInterface(new WebAppInterface(), "AndroidSecureBridge");
-                if (window.AndroidSecureBridge && typeof window.AndroidSecureBridge.setSecureFlags === 'function') {
-                    window.AndroidSecureBridge.setSecureFlags(enableSecureMode);
-                    console.log("[MDM Security Bridge] Dispatched successful lock command to Android container.");
-                    return;
-                }
-
-                // ---- METHOD B: iOS WKWEBVIEW MESSAGE HANDLER ----
-                // Matches standard setup: configuration.userContentController.add(self, name: "secureModeHandler")
-                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.secureModeHandler) {
-                    window.webkit.messageHandlers.secureModeHandler.postMessage({
-                        action: "setSecureFlags",
-                        value: enableSecureMode
-                    });
-                    console.log("[MDM Security Bridge] Dispatched successful lock command to iOS container.");
-                    return;
-                }
-
-                console.warn("[MDM Security Bridge] Code running outside an authorized secure container shell. Local testing fallback active.");
-
-            } catch (bridgeError) {
-                console.error("[MDM Security Bridge] Failed to execute handshakes over native pipeline bridge channel:", bridgeError);
             }
         }
     </script>
