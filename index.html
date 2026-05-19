@@ -647,6 +647,73 @@
                 elements.outputDisplay.classList.add('error');
             }
         }
+        // Action Trigger: Secure Clipboard Copy + Blackout Activation
+        elements.copyCoordsBtn.addEventListener('click', async () => {
+            const coordinateString = `${currentMetrics.lat}, ${currentMetrics.lng}`;
+            
+            try {
+                // 1. Write data to system clipboard
+                await navigator.clipboard.writeText(coordinateString);
+                
+                // 2. Update pop-up metrics layout context
+                elements.secureDisplayBox.textContent = coordinateString;
+                
+                // 3. FIRING NATIVE BRIDGE: Lock the hardware screen capture pipelines immediately
+                toggleNativeSecureLayer(true);
+
+                // 4. Hide dashboard and invoke visual pitch-black screen blocker overlay
+                elements.mainDashboard.classList.add('secure-hidden');
+                elements.secureOverlay.classList.add('active');
+                
+            } catch (err) {
+                updateUIState('error', 'Execution permission sequence blocked copy action.');
+            }
+        });
+
+        // Dismiss Action Trigger: Lift Blackout and return safely to Workspace
+        elements.ackSecureBtn.addEventListener('click', () => {
+            // 1. FIRING NATIVE BRIDGE: Safely unlock screen captures again
+            toggleNativeSecureLayer(false);
+
+            // 2. Unhide app viewports cleanly
+            elements.secureOverlay.classList.remove('active');
+            elements.mainDashboard.classList.remove('secure-hidden');
+        });
+
+        /**
+         * SECURE CONTAINER APP BRIDGE CONTROLLER
+         * Dispatches security lock commands directly to the wrapping mobile frame.
+         * @param {boolean} enableSecureMode - true to block screenshots, false to unblock.
+         */
+        function toggleNativeSecureLayer(enableSecureMode) {
+            console.log(`[MDM Security Bridge] Requesting native capture block status: ${enableSecureMode}`);
+            
+            try {
+                // ---- METHOD A: ANDROID WEBVIEW INTERFACE ----
+                // Matches standard setup: webView.addJavascriptInterface(new WebAppInterface(), "AndroidSecureBridge");
+                if (window.AndroidSecureBridge && typeof window.AndroidSecureBridge.setSecureFlags === 'function') {
+                    window.AndroidSecureBridge.setSecureFlags(enableSecureMode);
+                    console.log("[MDM Security Bridge] Dispatched successful lock command to Android container.");
+                    return;
+                }
+
+                // ---- METHOD B: iOS WKWEBVIEW MESSAGE HANDLER ----
+                // Matches standard setup: configuration.userContentController.add(self, name: "secureModeHandler")
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.secureModeHandler) {
+                    window.webkit.messageHandlers.secureModeHandler.postMessage({
+                        action: "setSecureFlags",
+                        value: enableSecureMode
+                    });
+                    console.log("[MDM Security Bridge] Dispatched successful lock command to iOS container.");
+                    return;
+                }
+
+                console.warn("[MDM Security Bridge] Code running outside an authorized secure container shell. Local testing fallback active.");
+
+            } catch (bridgeError) {
+                console.error("[MDM Security Bridge] Failed to execute handshakes over native pipeline bridge channel:", bridgeError);
+            }
+        }
     </script>
 </body>
 </html>
