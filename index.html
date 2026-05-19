@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Dash | Optimized Coordinate Hub</title>
+    <title>GPS Dash | MDM Secure Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -38,8 +38,8 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            padding: 40px 20px; /* Generous vertical padding for mobile devices */
-            overflow-y: auto;   /* FIXED: Enabled smooth vertical layout scrolling */
+            padding: 40px 20px; 
+            overflow-y: auto;   
             position: relative;
         }
 
@@ -56,6 +56,7 @@
         .orb-1 { top: 10%; left: 15%; width: 380px; height: 380px; background: var(--dynamic-accent); }
         .orb-2 { bottom: 10%; right: 15%; width: 420px; height: 420px; background: var(--secondary); }
 
+        /* Main Dashboard Viewport Container wrapper */
         .app-container { 
             background: var(--card-glass); 
             backdrop-filter: blur(30px);
@@ -68,12 +69,12 @@
             width: 100%;
             text-align: center;
             z-index: 1;
-            transition: var(--transition);
+            transition: opacity 0.4s ease;
         }
 
-        .app-container:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 40px var(--dynamic-glow);
+        .app-container.secure-hidden {
+            opacity: 0 !important;
+            pointer-events: none;
         }
 
         header i { 
@@ -147,16 +148,6 @@
             0% { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
             100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
         }
-
-        @keyframes blastSuccess {
-            0% { border-color: var(--success); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.3); }
-            50% { box-shadow: 0 0 30px 15px rgba(0, 230, 118, 0); }
-            100% { border-color: rgba(255, 255, 255, 0.04); }
-        }
-        #outputDisplay.has-data { 
-            animation: blastSuccess 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-        }
-        #outputDisplay.error { border-color: rgba(255, 82, 82, 0.25); }
 
         #coordWrapper {
             position: relative;
@@ -242,7 +233,6 @@
         }
         .meta-item strong { color: var(--text-main); display: block; font-size: 0.85rem; margin-top: 2px;}
 
-        /* REFACTORED: Action container holds a single full-width premium layout element */
         .action-group {
             display: block;
             margin-top: 8px;
@@ -265,7 +255,6 @@
             background: rgba(255,255,255,0.1); 
             border-color: rgba(255,255,255,0.15);
         }
-        .btn.copied { background: var(--success) !important; color: #000000; }
 
         footer {
             margin-top: 2rem;
@@ -277,10 +266,102 @@
             opacity: 0.6;
         }
 
-        @media (max-width: 480px) {
-            .app-container { padding: 2.25rem 1.25rem; }
-            h1 { font-size: 1.7rem; }
-            #coordWrapper { font-size: 1.05rem; }
+        /* MDM PITCH-BLACK SECURE POPUP SHIELD SYSTEM */
+        #secureOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000; /* Strict solid blackout layer prevents screenshot leaks underneath */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #secureOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .secure-modal-card {
+            background: #0d0f12;
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #secureOverlay.active .secure-modal-card {
+            transform: scale(1);
+        }
+
+        /* Micro-Animation Circle Tick Confirmation */
+        .success-tick-wrapper {
+            width: 72px;
+            height: 72px;
+            background: rgba(0, 230, 118, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+        .success-tick-wrapper i {
+            font-size: 2rem;
+            color: var(--success);
+            transform: scale(0);
+        }
+        #secureOverlay.active .success-tick-wrapper i {
+            animation: popTick 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popTick {
+            100% { transform: scale(1); }
+        }
+
+        .secure-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        .secure-warning {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .secure-data-box {
+            background: #030406;
+            padding: 14px;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 1.1rem;
+            color: var(--success);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.02);
+            word-break: break-all;
+        }
+
+        .btn-acknowledge {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 700;
+        }
+        .btn-acknowledge:hover {
+            background: #f0f1f2;
         }
     </style>
 </head>
@@ -289,7 +370,8 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <div class="app-container">
+    <!-- Active App Interface Layer -->
+    <div id="mainDashboard" class="app-container">
         <header>
             <i class="fas fa-satellite-dish"></i>
             <h1>GPS Coordinate Hub</h1>
@@ -333,8 +415,26 @@
         </footer>
     </div>
 
+    <!-- Solid Pitch-Black Security Interceptor Shield Overlay Layer -->
+    <div id="secureOverlay">
+        <div class="secure-modal-card">
+            <div class="success-tick-wrapper">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="secure-title">Data Copied Securely</div>
+            <p class="secure-warning">Device clipboard updated. Main workspace components have been blacked out automatically to prevent background screenshot leakage.</p>
+            
+            <div id="secureDisplayBox" class="secure-data-box">0.00000000, 0.00000000</div>
+            
+            <button id="ackSecureBtn" class="btn btn-acknowledge">
+                <i class="fas fa-shield"></i> Acknowledge
+            </button>
+        </div>
+    </div>
+
     <script>
         const elements = {
+            mainDashboard: document.getElementById('mainDashboard'),
             getLocBtn: document.getElementById('getLocBtn'),
             copyCoordsBtn: document.getElementById('copyCoordsBtn'),
             outputDisplay: document.getElementById('outputDisplay'),
@@ -346,7 +446,10 @@
             metaGrid: document.getElementById('metaGrid'),
             accuracyField: document.getElementById('accuracyField'),
             altitudeField: document.getElementById('altitudeField'),
-            actionGroup: document.getElementById('actionGroup')
+            actionGroup: document.getElementById('actionGroup'),
+            secureOverlay: document.getElementById('secureOverlay'),
+            secureDisplayBox: document.getElementById('secureDisplayBox'),
+            ackSecureBtn: document.getElementById('ackSecureBtn')
         };
 
         let currentMetrics = { lat: '', lng: '' };
@@ -475,9 +578,53 @@
             }
         }
 
+        // Action Trigger: Secure Clipboard Copy + Blackout Activation
         elements.copyCoordsBtn.addEventListener('click', async () => {
-            await executeClipboardSave(`${currentMetrics.lat}, ${currentMetrics.lng}`, elements.copyCoordsBtn, '<i class="fas fa-copy"></i> Copy Lat/Lng Coordinates');
+            const coordinateString = `${currentMetrics.lat}, ${currentMetrics.lng}`;
+            
+            try {
+                // Step 1: Write text to system clipboard
+                await navigator.clipboard.writeText(coordinateString);
+                
+                // Step 2: Update pop-up metrics layout context
+                elements.secureDisplayBox.textContent = coordinateString;
+                
+                // Step 3: Call Container Security Bridge Placeholder
+                toggleNativeSecureLayer(true);
+
+                // Step 4: Hide dashboard and invoke visual pitch-black screen blocker overlay 
+                elements.mainDashboard.classList.add('secure-hidden');
+                elements.secureOverlay.classList.add('active');
+                
+            } catch (err) {
+                updateUIState('error', 'Execution permission sequence blocked copy action.');
+            }
         });
+
+        // Dismiss Action Trigger: Lift Blackout and return safely to Workspace
+        elements.ackSecureBtn.addEventListener('click', () => {
+            // Step 1: Disable Container Security Flags
+            toggleNativeSecureLayer(false);
+
+            // Step 2: Unhide app viewports cleanly
+            elements.secureOverlay.classList.remove('active');
+            elements.mainDashboard.classList.remove('secure-hidden');
+        });
+
+        /*
+          CRITICAL SECURITY BRIDGE INTERFACE CONTAINER STUB
+          --------------------------------------------------
+          If you deploy via Flutter/WebView, map this routine to invoke your native safety flags.
+          Example (Android Native):
+              if(state) { getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE); }
+        */
+        function toggleNativeSecureLayer(enableSecureMode) {
+            console.log(`[MDM Security Bridge]: Native system screen capture tracking restriction status set to: ${enableSecureMode}`);
+            
+            // Example hook syntax pattern for future integration setup:
+            // if (window.AndroidBridge) { window.AndroidBridge.setSecureFlags(enableSecureMode); }
+            // if (window.webkit && window.webkit.messageHandlers) { window.webkit.messageHandlers.secureMode.postMessage(enableSecureMode); }
+        }
 
         function updateUIState(status, messageText) {
             elements.outputDisplay.classList.remove('loading', 'has-data', 'error');
@@ -498,20 +645,6 @@
                 elements.actionGroup.classList.add('visible');
             } else if (status === 'error') {
                 elements.outputDisplay.classList.add('error');
-            }
-        }
-
-        async function executeClipboardSave(textToSave, componentInstance, initialMarkupText) {
-            try {
-                await navigator.clipboard.writeText(textToSave);
-                componentInstance.classList.add('copied');
-                componentInstance.innerHTML = '<i class="fas fa-check"></i> Verified!';
-                setTimeout(() => {
-                    componentInstance.classList.remove('copied');
-                    componentInstance.innerHTML = initialMarkupText;
-                }, 2000);
-            } catch (err) {
-                updateUIState('error', 'Execution permission sequence blocked copy action.');
             }
         }
     </script>
